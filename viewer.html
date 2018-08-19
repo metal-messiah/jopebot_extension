@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="upgrade-insecure-requests"
+    ></meta>
+
+    <link
+        rel="stylesheet"
+        href="stylesheets/fontawesome.css"
+    ></link>
+
+    <link
+        rel="stylesheet"
+        href="stylesheets/shared.css"
+    ></link>
+
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script src="scripts/libs/jquery.js"></script>
+    <script src="scripts/libs/socket.io.2.0.4.js"></script>
+    <script src="scripts/fuse.min.js"></script>
+    <script src="scripts/songSearch.js"></script>
+    <script src="scripts/viewer.js"></script>
+</head>
+
+<body>
+    <div
+        class="hidden"
+        id="offline"
+    >
+        <div id="offlineSplash">
+            <a
+                href="http://www.jopebot.com"
+                target="_blank"
+            >
+                <img
+                    class="logo-big"
+                    src="https://www.jopebot.com/assets/icon.png"
+                >
+            </a>
+
+            <p>JopeBot isn't turned on!</p>
+
+            <div class="bottom">
+                <div>Tell JopeBot who you are!</div>
+
+                <i class="fas fa-hand-point-down pointer-arrow"></i>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="hidden"
+        id="online"
+    >
+        <div id="splash">
+            <a
+                href="http://www.jopebot.com"
+                target="_blank"
+            >
+                <img
+                    class="logo-big"
+                    src="https://www.jopebot.com/assets/icon.png"
+                >
+            </a>
+
+            <p>
+                Want to submit requests, see what's coming up, what's been played, and more right from this page?
+            </p>
+
+            <div class="bottom">
+                <div>Tell JopeBot who you are!</div>
+
+                <i class="fas fa-hand-point-down pointer-arrow"></i>
+            </div>
+        </div>
+
+        <div id="authorized">
+            <div id="nav">
+                <div
+                    class="nav-button active"
+                    title="Go to JopeBot.com"
+                    data-panel="jopebot"
+                >
+                    <img
+                        class="logo-small"
+                        src="https://www.jopebot.com/assets/icon.png"
+                    >
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="requestTab"
+                    title="Submit"
+                    data-panel="request"
+                >
+                    <i class="fas fa-share-square"></i>
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="requestListTab"
+                    title="Current List"
+                    data-panel="requestlist"
+                >
+                    <i class="fas fa-list-ol"></i>
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="suggestionsTab"
+                    title="Top Suggestions"
+                    data-panel="suggestions"
+                >
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="selfTab"
+                    title="My Data"
+                    data-panel="self"
+                >
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="playedTab"
+                    title="Completed"
+                    data-panel="played"
+                >
+                    <i class="fas fa-history"></i>
+                </div>
+
+                <div
+                    class="nav-button"
+                    id="musicTab"
+                    title="Songs"
+                    data-panel="music"
+                >
+                    <i class="fas fa-music"></i>
+                </div>
+            </div>
+
+            <div
+                class="panel"
+                id="jopebot"
+            >
+                <h3>
+                    <span>JopeBot</span>
+                </h3>
+
+                <hr>
+
+                <div class="text-block">
+                    <span>
+                        JopeBot is a free Twitch/Mixer stream bot that simply makes taking live chat requests easier for everyone, rewards loyalty, automatically promotes your stream, and much more.
+                    </span>
+                </div>
+
+                <hr>
+
+                <a
+                    href="https://www.jopebot.com"
+                    target="_blank"
+                >Go to JopeBot.com</a>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="request"
+            >
+                <h3>
+                    <span>Submit</span>
+                </h3>
+
+                <hr>
+
+                <select id="requestType">
+                    <option
+                        id="suggestOption"
+                        value="suggest"
+                    >Suggestion</option>
+
+                    <option
+                        id="standardOption"
+                        value="standard"
+                    >Standard Request</option>
+
+                    <option
+                        id="priorityOption"
+                        value="priority"
+                    >Priority Request</option>
+
+                    <option
+                        id="vipOption"
+                        value="vip"
+                    >VIP Request</option>
+                </select>
+
+                <input
+                    id="requestInput"
+                    type="text"
+                    placeholder="Message"
+                ></input>
+
+                <button
+                    id="submitRequest"
+                    disabled="disabled"
+                >Submit</button>
+
+                <div id="outMsg"></div>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="requestlist"
+            >
+                <h3>
+                    <span>Up Next</span>
+                </h3>
+
+                <hr>
+                <ol id="requestlistContent"></ol>
+                <hr>
+
+                <a
+                    id="requestlistLink"
+                    target="_blank"
+                >View All</a>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="suggestions"
+            >
+                <h3>
+                    <span>Top Suggestions</span>
+                </h3>
+
+                <hr>
+                <ol id="suggestionsContent"></ol>
+                <hr>
+
+                <a
+                    id="suggestionsLink"
+                    target="_blank"
+                >Submit Your Votes</a>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="self"
+            >
+                <h3>
+                    <span class="viewer"></span>
+                </h3>
+
+                <hr>
+                <div id="selfContent"></div>
+                <hr>
+
+                <a
+                    id="selfLink"
+                    target="_blank"
+                >View All</a>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="played"
+            >
+                <h3>
+                    <span>Recently Played</span>
+                </h3>
+
+                <hr>
+                <ol id="playedContent"></ol>
+                <hr>
+
+                <a
+                    id="playedLink"
+                    target="_blank"
+                >View All</a>
+            </div>
+
+            <div
+                class="hidden panel"
+                id="music"
+            >
+                <h3>
+                    <span>Songs</span>
+                </h3>
+
+                <hr>
+                <div id="songs"></div>
+                <hr>
+
+                <input
+                    id="songSearch"
+                    type="text"
+                    placeholder="Song, Artist, Album, Genre, Charter"
+                ></input>
+
+                <button id="songSearchSubmit">Search</button>
+
+                <br>
+                <div id="songSearchResults"></div>
+                <hr>
+
+                <a
+                    id="songLink"
+                    target="_blank"
+                >View All Songs</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
